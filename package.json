@@ -1,0 +1,11 @@
+{
+  "name": "taxi-analytics",
+  "version": "1.0.0",
+  "description": "A simple REST API app that provides analytics through BigQuery.",
+  "main": "server.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "Dennis Ng",
+  "license": "ISC"
+}
