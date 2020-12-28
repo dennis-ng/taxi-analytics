@@ -4,7 +4,7 @@
   "description": "A simple REST API app that provides analytics through BigQuery.",
   "main": "server.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha --exit",
     "migrations": "node bigquery-migrations.js"
   },
   "author": "Dennis Ng",
@@ -12,7 +12,10 @@
   "dependencies": {
     "@google-cloud/bigquery": "^5.5.0",
     "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^4.3.0",
     "mocha": "^8.2.1"
   }
 }
