@@ -28,6 +28,19 @@ If you manually installed the application via `npm install`, run the following i
 >`npm test`
 
 ![mocha results](./screenshots/npm_test_example.png)
+
+## Creation of aggregated table
+In the `.credentials folder`, I have included a service account user that has access to the table that I have already created to store the aggregated results. If you would like to run the aggregation queries on your own account, please replace the json file in the `.credentials` folder, and update the `.env` file included.
+After updating the env, you can run
+
+>`docker run -e CI=true --rm taxi-analytics npm run migrations`
+
+if you used the `install.sh` or
+
+>`npm run migrations`
+
+if you installed through npm, to create the table and run the aggregation queries. The queries are written using the node.js bigquery api. You can view the queries in `bigquery-migrations.js`.
+
 ## Uninstalling
 The docker container is set to be persistent and ran with `'restart=always'`. To remove it:
 
