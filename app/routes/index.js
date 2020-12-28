@@ -40,7 +40,11 @@ router.get('/average_speed_24hrs', checkSchema(tripsValidation.averageSpeedSchem
         return res.status(400).json({ errors: errors.array({ onlyFirstError: true }) })
     }
     let date = req.query.date
-    res.json()
+    trips.getAverageSpeed(date).then(data => {
+        res.json({
+            "data" : data,
+        })
+    })
 })
 
 module.exports = router

@@ -1,5 +1,6 @@
 const {BigQuery} = require('@google-cloud/bigquery')
 const s2 = require('./s2')
+const dayjs = require('dayjs')
 
 const bigquery = new BigQuery()
 const TARGET_DATASET = process.env.TAXI_DATASET
@@ -56,7 +57,32 @@ let getAverageFare = async (day) => {
         }
     })
 }
+
+let getAverageSpeed = async (endDate) => {
+    const query =
+    `SELECT
+        (trip_distance / DATETIME_DIFF(dropoff_datetime, pickup_datetime, SECOND) * 60 * 60) AS average_speed
+    FROM
+        \`${TABLE}\`
+    WHERE
+        (DATE(pickup_datetime) BETWEEN @start AND @end)
+        AND
+        (DATE(dropoff_datetime) = @end)`
+
+    const startDate = dayjs(endDate).subtract(1, 'day').format('YYYY-MM-DD')
+    const options = {
+        query: query,
+        params: {
+            start: startDate,
+            end: endDate,
+        },
+    }
+
+    const [rows] = await bigquery.query(options);
+    return rows
+}
 module.exports = {
     count,
     getAverageFare,
+    getAverageSpeed,
 }

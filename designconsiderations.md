@@ -10,7 +10,7 @@ Design considerations:
     WHERE
         REGEXP_CONTAINS(_TABLE_SUFFIX, r'((green_trips_201[4-7])|(yellow_trips_201[5-7]))')
     ```
-2. Null Values and Invalid values<P>
+2. Null Values and Invalid values<p>
 There are some rows where some columns in `trip_distance`, `fare_amount`, `dropoff_datetime` or the `longitude/latitude` are NULL. I exclude any rows where any of those columns contain a `NULL` value to ensure the endpoints are returning results based on the same consistent set of taxi trips. However, if I do that, tables in 2017 will be completely empty. If approximation is acceptable, I will include the rows as long as they contain either valid set of columns in [`longitude/latitude`, `fare_amount`] or valid set of columns in [`trip_distance`, `dropoff_datetime`]. However, because the API required does not support specify if approximation is expected, I would rather not surprise the user.<br>
 Some of the columns have only a certain valid range of values, thus the following filters are put in place:
     >```
@@ -37,3 +37,7 @@ Some of the columns have only a certain valid range of values, thus the followin
 I found [one](https://github.com/CartoDB/bigquery-jslibs) already implemented and the source was very similar to the [npm registry's javascript port](https://www.npmjs.com/package/s2-geometry).<br>
 The javascript UDF slows down the SQL operation by a lot, but since we only need to run this once, it should be fine.<p>
 In this case, the requirement is to group the location by level 16 s2 id. Because BigQuery does not support unsigned 64 bit integers(cannot store the id 2^64-1), I stored and clustered the locations by using their s2 key instead of id. This will allow the cluster to be more efficient in case we want to group by a higher level of s2(< level 16). We can do that by using `SUBSTR`(e.g. `SUBSTR(level30_key, 1, 12)` to group them by level 10). One consideration is that I can also create level 30 s2 keys instead, then we can just use substrings of the level 30 s2 key. i.e. `SUBSTR(level30_key, 1, 18)` to get the level 16 keys. This will avoid expensive recomputation if we need other to group by the deeper levels.
+
+4. Average speed in the past 24 hours API requires filtering by `dropoff_datetime`, but data is only partitioned by `pickup_datetime`<p>
+If we were to run the query with a filter of only `WHERE dropoff_datetime=date`, bigquery would scan the entire 5.6GB of data available despite being a partitioned table. This would potentially be way bigger when we get more new data. This would both be slow and cost more. <br>
+Because we removed the 518 rows of trips that last more than 1 day, we can confirm that every trip will span over at most 2 dates(i.e. when the trip spans over midnight). Thus I can filter by the partitioned pickup_datetime to query from a range of 1 day before to the date given.
