@@ -24,7 +24,9 @@ let count = async (startDate, endDate) => {
     }
 
     const [rows] = await bigquery.query(options);
-    return rows
+    return await rows.map(row => {
+        return {...row, date: row.date.value}
+    })
 }
 
 module.exports = {
