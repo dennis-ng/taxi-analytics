@@ -22,7 +22,7 @@ describe('/GET total_trips', () => {
         res.body.data.should.eql([
             {
                 "date": "2016-01-01",
-                "total_trips": 342460
+                "total_trips": 339286
             }
         ])
 
@@ -36,31 +36,31 @@ describe('/GET total_trips', () => {
         res.body.data.should.eql([
             {
                 "date": "2016-01-01",
-                "total_trips": 342460
+                "total_trips": 339286
             },
             {
                 "date": "2016-01-02",
-                "total_trips": 310838
+                "total_trips": 306251
             },
             {
                 "date": "2016-01-03",
-                "total_trips": 300670
+                "total_trips": 298529
             },
             {
                 "date": "2016-01-04",
-                "total_trips": 314059
+                "total_trips": 311973
             },
             {
                 "date": "2016-01-05",
-                "total_trips": 341083
+                "total_trips": 338814
             },
             {
                 "date": "2016-01-06",
-                "total_trips": 346390
+                "total_trips": 343879
             },
             {
                 "date": "2016-01-07",
-                "total_trips": 362721
+                "total_trips": 359397
             }
         ])
     }).timeout(10000)
@@ -119,7 +119,7 @@ describe('/GET average_fare_heatmap', () => {
         res.body.should.contain.key('data')
         res.body.data.should.be.an('array')
         // Historical data should not change.
-        res.body.data.length.should.be.equal(7644)
+        res.body.data.length.should.be.equal(7622)
         // Check a random subset of the results
         res.body.data.should.deep.include({
             "s2id": "89c243545",
@@ -177,7 +177,7 @@ describe('/GET average_speed_24hrs', () => {
         res.body.should.contain.key('data')
         res.body.data.should.be.an('array')
         // Historical data should not change.
-        res.body.data.length.should.be.equal(309425)
+        res.body.data.length.should.be.equal(306251)
         // Check a random subset of the results
         res.body.data.should.deep.include({
             "average_speed" : 36.809726443769

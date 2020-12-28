@@ -59,6 +59,8 @@ async function insertFromAggregation(sourceTable) {
       (trip_distance > 0)
       AND
       (fare_amount > 0)
+      AND
+      (DATETIME_DIFF(dropoff_datetime, pickup_datetime, DAY) < 1)
       AND EXTRACT(YEAR FROM pickup_datetime)=${year}`
 
   const options = {
