@@ -119,8 +119,8 @@ describe('/GET average_fare_heatmap', () => {
         res.body.data.should.be.an('array')
         // Historical data should not change. Check a random subset of the results
         res.body.data.should.deep.include({
-            "s2id": "d5f7a6fd0",
-            "fare": 7.0
+            "s2id": "89c243545",
+            "fare": 6.0
         })
         res.body.data.should.deep.include({
             "s2id": "8995713f3",
