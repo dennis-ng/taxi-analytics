@@ -25,7 +25,9 @@ Some of the columns have only a certain valid range of values, thus the followin
         AND
         (trip_distance > 0)
     ```
-On top of the usual valid range of values, I noticed that some of the pickup_datetime appears to not belong to the year indicated by the table name(i.e. tlc_green_trips_2017 containing `MIN(pickup_datetime)` of the year 2008). Hence, I also filtered out the pickup_datetime with year that doesn't match the table name.
+On top of the usual valid range of values, I noticed that some of the pickup_datetime appears to not belong to the year indicated by the table name(i.e. tlc_green_trips_2017 containing `MIN(pickup_datetime)` of the year 2008). Hence, I also filtered out the pickup_datetime with year that doesn't match the table name.<P>
+There are some trips that lasted only a few seconds between pickup_datetime and dropoff_datetime, yet travelled a great distance. I left them in because if I tried to determine a threshold for the distance or time travelled, the data for the average speed would become biased.(e.g. We might miss out on traffic jams) I would inform the data scientist or whoever is going to use these data and let them decide according to the requirements of their application. <P>
+One way I can handle it however, could be using k-means clustering to remove the outliers. I know BigQuery supports this model natively but I suspect it might be out of scope for this assignment. If this is something I should have done, please let me know and I will work on it.
 
 3. Because the ST_GEOHASH function in bigquery is not implemented using S2 geometry, I needed to use a javascript UDF to do the hashing. <br>
 I found [one](https://github.com/CartoDB/bigquery-jslibs) already implemented and the source was very similar to the [npm registry's javascript port](https://www.npmjs.com/package/s2-geometry).<br>

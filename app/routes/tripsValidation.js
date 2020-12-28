@@ -21,7 +21,11 @@ const fareHeatmapSchema = {
     'date': dateSchema,
 }
 
+const averageSpeedSchema = {
+    'date': dateSchema,
+}
 module.exports = {
     totalTripsSchema,
     fareHeatmapSchema,
+    averageSpeedSchema,
 }

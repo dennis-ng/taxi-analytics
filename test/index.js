@@ -4,6 +4,8 @@ const should = chai.should()
 
 // We use the same bigquery env as production in this case. Otherwise, uncomment the following to set a test environment.
 // process.env.NODE_ENV = 'test'
+// Some of the historical data used for comparison in these tests are determined by running the expected queries directly
+// in the Google Cloud BigQuery console.
 const server = require('../server')
 
 chai.use(chaiHttp)
@@ -105,7 +107,6 @@ describe('/GET total_trips', () => {
         res = await chai.request(server)
             .get('/total_trips?start=2016-01-02T00:00:00&end=2016-01-01T00:00:00') // Not expecting time
         res.should.have.status(400)
-
     })
 })
 
@@ -117,7 +118,9 @@ describe('/GET average_fare_heatmap', () => {
         res.body.should.be.an('object')
         res.body.should.contain.key('data')
         res.body.data.should.be.an('array')
-        // Historical data should not change. Check a random subset of the results
+        // Historical data should not change.
+        res.body.data.length.should.be.equal(7644)
+        // Check a random subset of the results
         res.body.data.should.deep.include({
             "s2id": "89c243545",
             "fare": 6.0
@@ -162,6 +165,57 @@ describe('/GET average_fare_heatmap', () => {
         res = await chai.request(server)
             .get('/average_fare_heatmap?date=2016-01-02T00:00:00') // Not expecting time
         res.should.have.status(400)
+    })
+})
 
+describe('/GET average_speed_24hrs', () => {
+    it('should get the average speed of trips that ended on a given dropoff date', async () => {
+        let res = await chai.request(server)
+            .get('/average_speed_24hrs?date=2016-01-02')
+        res.should.have.status(200)
+        res.body.should.be.an('object')
+        res.body.should.contain.key('data')
+        res.body.data.should.be.an('array')
+        // Historical data should not change.
+        res.body.data.length.should.be.equal(309425)
+        // Check a random subset of the results
+        res.body.data.should.deep.include({
+            "average_speed" : 36.809726443769
+        })
+        res.body.data.should.deep.include({
+            "average_speed" : 78.0
+        })
+    }).timeout(10000)
+
+    it('should return empty array when date is valid but not in our database', async() => {
+        let res = await chai.request(server)
+            .get('/average_speed_24hrs?date=1990-01-01')
+        res.should.have.status(200)
+        res.body.should.be.an('object')
+        res.body.should.contain.key('data')
+        res.body.data.should.be.an('array')
+        res.body.data.should.be.empty
+    })
+
+    it('should tell user if the date is invalid', async () =>{
+        let res = await chai.request(server)
+            .get('/average_speed_24hrs')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_speed_24hrs?dead=2016-01-01')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_speed_24hrs?date=helloworld')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_speed_24hrs?date=123')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_speed_24hrs?date=2016-01-02T00:00:00') // Not expecting time
+        res.should.have.status(400)
     })
 })

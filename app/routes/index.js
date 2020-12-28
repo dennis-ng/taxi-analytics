@@ -33,4 +33,14 @@ router.get('/average_fare_heatmap', checkSchema(tripsValidation.fareHeatmapSchem
     })
 })
 
+
+router.get('/average_speed_24hrs', checkSchema(tripsValidation.averageSpeedSchema), (req, res) => {
+    const errors = validationResult(req)
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array({ onlyFirstError: true }) })
+    }
+    let date = req.query.date
+    res.json()
+})
+
 module.exports = router
