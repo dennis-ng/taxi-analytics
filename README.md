@@ -4,8 +4,8 @@ Please refer to [designconsiderations.md](designconsiderations.md) for the thoug
 This application is written in nodejs and `install.sh` requires **docker** to be installed. However, if you don't have docker, you can just run:
 
 ```
-    npm install
-    npm start
+npm install
+npm start
 ```
 
 I did not use any composer with the dockerfile so that it can be run with minimal requirements.
@@ -32,7 +32,7 @@ If you manually installed the application via `npm install`, run the following i
 The docker container is set to be persistent and ran with `'restart=always'`. To remove it:
 
 ```
-    docker stop dennis-taxi-analytics
-    docker rm dennis-taxi-analytics
-    docker rmi taxi-analytics
+docker stop dennis-taxi-analytics
+docker rm dennis-taxi-analytics
+docker rmi taxi-analytics
 ```
