@@ -61,7 +61,7 @@ describe('/GET total_trips', () => {
                 "total_trips": 362721
             }
         ])
-    })
+    }).timeout(10000)
 
     it('should return empty array when date range is valid but not in our database', async() => {
         let res = await chai.request(server)
@@ -104,6 +104,63 @@ describe('/GET total_trips', () => {
 
         res = await chai.request(server)
             .get('/total_trips?start=2016-01-02T00:00:00&end=2016-01-01T00:00:00') // Not expecting time
+        res.should.have.status(400)
+
+    })
+})
+
+describe('/GET average_fare_heatmap', () => {
+    it('should get the average <fare_amount> per S2 ID at level 16, formatted in base16, for a given pickup date', async () => {
+        let res = await chai.request(server)
+            .get('/average_fare_heatmap?date=2016-01-01')
+        res.should.have.status(200)
+        res.body.should.be.an('object')
+        res.body.should.contain.key('data')
+        res.body.data.should.be.an('array')
+        // Historical data should not change. Check a random subset of the results
+        res.body.data.should.deep.include({
+            "s2id": "d5f7a6fd0",
+            "fare": 7.0
+        })
+        res.body.data.should.deep.include({
+            "s2id": "8995713f3",
+            "fare": 36.5
+        })
+        res.body.data.should.deep.include({
+            "s2id": "89c2f6a05",
+            "fare": 12.875
+        })
+    }).timeout(10000)
+
+    it('should return empty array when date is valid but not in our database', async() => {
+        let res = await chai.request(server)
+            .get('/average_fare_heatmap?date=1990-01-01')
+        res.should.have.status(200)
+        res.body.should.be.an('object')
+        res.body.should.contain.key('data')
+        res.body.data.should.be.an('array')
+        res.body.data.should.be.empty
+    })
+
+    it('should tell user if the date is invalid', async () =>{
+        let res = await chai.request(server)
+            .get('/average_fare_heatmap')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_fare_heatmap?dead=2016-01-01')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_fare_heatmap?date=helloworld')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_fare_heatmap?date=123')
+        res.should.have.status(400)
+
+        res = await chai.request(server)
+            .get('/average_fare_heatmap?date=2016-01-02T00:00:00') // Not expecting time
         res.should.have.status(400)
 
     })
